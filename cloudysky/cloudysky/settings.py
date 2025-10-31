@@ -15,6 +15,12 @@ INSTALLED_APPS = [
     'app',  # <- required
 ]
 
+# Media (for avatars / uploads)
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
