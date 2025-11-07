@@ -1,32 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Sign Up</title>
+  <title>Create User</title>
+  <style>
+    body { display:flex; min-height:100vh; align-items:center; justify-content:center; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; }
+    .card { text-align:center; max-width:640px; padding:24px; border:1px solid #e5e7eb; border-radius:12px; }
+    label { display:inline-block; min-width:120px; text-align:right; margin-right:8px; }
+    p { margin:10px 0; }
+    .row { display:flex; align-items:center; justify-content:center; gap:8px; }
+    button { background:#16a34a; color:#fff; padding:8px 16px; border:none; border-radius:8px; cursor:pointer; }
+  </style>
 </head>
-<body style="display:flex;min-height:100vh;align-items:center;justify-content:center;font-family:system-ui,sans-serif;">
-  <div>
-    <h2>Create Account</h2>
-    <form action="/app/createUser" method="POST">
+<body>
+  <div class="card">
+    <h2>Create a new user</h2>
+    <form action="/app/createUser" method="post">
       {% csrf_token %}
-      <p><label>Username
-        <input type="text" name="user_name" required>
-      </label></p>
-      <p><label>Last name
-        <input type="text" name="last_name">
-      </label></p>
-      <p><label>Email
-        <input type="email" name="email" required>
-      </label></p>
-      <p><label>Password
-        <input type="password" name="password" required>
-      </label></p>
-      <p><label>Admin?
-        <input type="checkbox" name="is_admin" value="1">
-      </label></p>
-      <button type="submit" style="background:#16a34a;color:white;padding:8px 14px;border:0;border-radius:6px;">
-        Sign Up
-      </button>
+      <p class="row">
+        <label for="user_name">Username</label>
+        <input type="text" id="user_name" name="user_name" required>
+      </p>
+      <p class="row">
+        <label for="last_name">Last name</label>
+        <input type="text" id="last_name" name="last_name">
+      </p>
+      <p class="row">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+      </p>
+      <p class="row">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+      </p>
+      <p>Role:
+        <label><input type="radio" name="is_admin" value="0" checked> Serf</label>
+        <label style="margin-left:12px;"><input type="radio" name="is_admin" value="1"> Administrator</label>
+      </p>
+      <p><button type="submit">Sign Up</button></p>
     </form>
   </div>
 </body>
