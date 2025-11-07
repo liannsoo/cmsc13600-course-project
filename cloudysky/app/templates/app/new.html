@@ -1,25 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   <title>Sign Up</title>
   <style>
-    body { font-family: system-ui, -apple-system, Arial, sans-serif; display:flex; min-height:100vh; }
-    .wrap { margin:auto; text-align:center; max-width:500px; }
-    label { display:block; margin-top:0.75rem; text-align:left; }
-    input[type="text"], input[type="email"], input[type="password"] { width:100%; padding:0.5rem; }
-    .btn { margin-top:1rem; background:#0a7a27; color:white; border:none; padding:0.6rem 1rem; border-radius:6px; cursor:pointer; }
+    body { display:flex; min-height:100vh; margin:0; font-family:sans-serif; }
+    .wrap { margin:auto; text-align:center; max-width:600px; }
+    form { display:inline-block; text-align:left; }
+    label { display:block; margin-top:10px; }
+    .btn { margin-top:12px; background:#2ecc71; color:#fff; border:0; padding:8px 14px; border-radius:6px; cursor:pointer; }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h2>Create an Account</h2>
-    <form method="post" action="/app/createUser">
+    <h1>Create a User</h1>
+
+    <!-- GET-only view: shows a POSTing form -->
+    <form action="/app/createUser" method="post">
       {% csrf_token %}
       <label>Username
         <input type="text" name="user_name" required>
       </label>
-      <label>Last name (optional)
+      <label>Last name
         <input type="text" name="last_name">
       </label>
       <label>Email
@@ -28,14 +30,14 @@
       <label>Password
         <input type="password" name="password" required>
       </label>
-      <label>Is Admin?
-        <select name="is_admin">
-          <option value="0" selected>No</option>
-          <option value="1">Yes</option>
-        </select>
+      <label>
+        <input type="checkbox" name="is_admin" value="1"> Is admin
       </label>
-      <button class="btn" type="submit">Sign Up</button>
+
+      <button type="submit" class="btn">Sign Up</button>
     </form>
+
+    <p style="margin-top:1rem;"><a href="/">Back to index</a></p>
   </div>
 </body>
 </html>

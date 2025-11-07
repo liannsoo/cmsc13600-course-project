@@ -13,9 +13,10 @@ def index(request):
     chicago = ZoneInfo("America/Chicago")
     now_cdt = datetime.now(tz=chicago)
     current_time = now_cdt.strftime("%H:%M")
-    user = request.user if request.user.is_authenticated else None
-    return render(request, "app/index.html", {"current_time": current_time, "user": user})
-
+    return render(request, "app/index.html", {
+        "current_time": current_time,
+        # if logged in, template will show bold username/email; else "Not logged in"
+    })
 
 # ====== HW4: /app/new (GET only) ======
 def new_user_form(request):

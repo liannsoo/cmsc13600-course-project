@@ -47,9 +47,6 @@ TEMPLATES = [{
     },
 }]
 
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/app/'
-
 WSGI_APPLICATION = 'cloudysky.wsgi.application'
 
 DATABASES = {
@@ -58,6 +55,9 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/accounts/login/'
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'America/Chicago'   # OK even though /time uses ZoneInfo
