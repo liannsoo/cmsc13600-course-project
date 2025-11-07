@@ -47,6 +47,9 @@ TEMPLATES = [{
     },
 }]
 
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/app/'
+
 WSGI_APPLICATION = 'cloudysky.wsgi.application'
 
 DATABASES = {

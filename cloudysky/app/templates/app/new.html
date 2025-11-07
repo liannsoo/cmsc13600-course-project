@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Sign Up</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Arial, sans-serif; display:flex; min-height:100vh; }
+    .wrap { margin:auto; text-align:center; max-width:500px; }
+    label { display:block; margin-top:0.75rem; text-align:left; }
+    input[type="text"], input[type="email"], input[type="password"] { width:100%; padding:0.5rem; }
+    .btn { margin-top:1rem; background:#0a7a27; color:white; border:none; padding:0.6rem 1rem; border-radius:6px; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2>Create an Account</h2>
+    <form method="post" action="/app/createUser">
+      {% csrf_token %}
+      <label>Username
+        <input type="text" name="user_name" required>
+      </label>
+      <label>Last name (optional)
+        <input type="text" name="last_name">
+      </label>
+      <label>Email
+        <input type="email" name="email" required>
+      </label>
+      <label>Password
+        <input type="password" name="password" required>
+      </label>
+      <label>Is Admin?
+        <select name="is_admin">
+          <option value="0" selected>No</option>
+          <option value="1">Yes</option>
+        </select>
+      </label>
+      <button class="btn" type="submit">Sign Up</button>
+    </form>
+  </div>
+</body>
+</html>
+
