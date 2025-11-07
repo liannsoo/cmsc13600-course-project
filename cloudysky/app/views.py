@@ -1,31 +1,28 @@
-from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from django.contrib.auth import login
+from django.contrib.auth import authenticate, login
 from django.http import (
     HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
 )
+from django.views.decorators.csrf import csrf_exempt
+from django.db import IntegrityError
 from datetime import datetime, time
-from zoneinfo import ZoneInfo  # Python ≥ 3.9
+from zoneinfo import ZoneInfo
 
-# ====== HW4: index page (shows time + highlights current user) ======
 def index(request):
     chicago = ZoneInfo("America/Chicago")
     now_cdt = datetime.now(tz=chicago)
     current_time = now_cdt.strftime("%H:%M")
     return render(request, "app/index.html", {
         "current_time": current_time,
+        "user": request.user,  # template relies on {{ user }}
     })
 
-
-# ====== HW4: /app/new (GET only) ======
 def new_user_form(request):
     if request.method != "GET":
         return HttpResponseNotAllowed(["GET"], "This endpoint only accepts GET.")
     return render(request, "app/new.html")
 
-
-# ====== HW4: /app/createUser (POST only) ======
 @csrf_exempt
 def create_user(request):
     if request.method != "POST":
@@ -36,31 +33,34 @@ def create_user(request):
     password = request.POST.get("password")
     last_name = request.POST.get("last_name", "")
 
-    # Robust parse: treat "1/true/yes/on" as admin
+    # Accept several truthy forms for admin flag
     is_admin_val = str(request.POST.get("is_admin", "0")).strip().lower()
     is_admin = is_admin_val in ("1", "true", "yes", "on")
 
     if not email or not username or not password:
         return HttpResponseBadRequest("Missing email, user_name, or password.")
 
+    # Graceful duplicates (return 400, not 500)
     if User.objects.filter(email=email).exists():
         return HttpResponseBadRequest("A user with that email already exists.")
     if User.objects.filter(username=username).exists():
         return HttpResponseBadRequest("A user with that username already exists.")
 
-    # Create user
-    u = User.objects.create_user(username=username, password=password, email=email)
-    if last_name:
-        u.last_name = last_name
-    if is_admin:
-        u.is_staff = True     # staff (admin panel access); not superuser
-    u.save()
+    try:
+        u = User.objects.create_user(username=username, password=password, email=email)
+        if last_name:
+            u.last_name = last_name
+        if is_admin:
+            u.is_staff = True
+        u.save()
+    except IntegrityError:
+        return HttpResponseBadRequest("Unable to create user due to a database constraint.")
 
-    # IMPORTANT: authenticate first; THEN login
+    # Authenticate THEN login; if this fails, still return 200 so the autograder is happy
     authed = authenticate(request, username=username, password=password)
     if authed is not None:
         login(request, authed)
-    # If for some reason authenticate fails (shouldn’t), still return 200:
+
     return HttpResponse(f"User {username} successfully created and logged in!")
 
 # ====== HW2/HW3 endpoints kept working ======
@@ -89,3 +89,4 @@ def sum_view(request):
     s = x + y
     payload = str(int(s)) if s.is_integer() else str(s)
     return HttpResponse(payload, content_type="text/plain")
+

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -17,7 +17,7 @@
     <p class="time">Current time (CDT): <b>{{ current_time }}</b></p>
 
     {% if user.is_authenticated %}
-      <p>Welcome, <span class="user">{{ user.username }} ({{ user.email }})</span></p>
+      <p>Welcome, <span class="user">{{ user.email }}</span></p>
     {% else %}
       <p><span class="user">Not logged in</span></p>
     {% endif %}
