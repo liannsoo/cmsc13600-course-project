@@ -2,35 +2,34 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>CloudySky – Home</title>
+  <title>CloudySky</title>
   <style>
-    body { display:flex; min-height:100vh; margin:0; font-family:sans-serif; }
-    .wrap { margin:auto; text-align:center; max-width:700px; }
-    .highlight { font-weight:bold; background: #fffa9c; padding:0 6px; border-radius:4px; }
-    .bio { margin-top: 1rem; }
+    body { display:flex; min-height:100vh; align-items:center; justify-content:center; font-family:system-ui, sans-serif; }
+    .card { text-align:center; max-width:680px; }
+    .bio { margin-top:16px; opacity:.85; }
+    .user { font-weight:700; padding:2px 6px; border-radius:6px; background:#e0f2fe; display:inline-block; }
+    .time { font-variant-numeric: tabular-nums; }
   </style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="card">
     <h1>CloudySky</h1>
+    <p class="time">Current time (CDT): <b>{{ current_time }}</b></p>
 
-    <!-- Current time -->
-    <p>Current time (CDT): <span class="highlight">{{ current_time }}</span></p>
-
-    <!-- Login state -->
     {% if user.is_authenticated %}
-      <p>Welcome, <b>{{ user.username }} ({{ user.email }})</b></p>
+      <p>Welcome, <span class="user">{{ user.username }} ({{ user.email }})</span></p>
     {% else %}
-      <p><span class="highlight">Not logged in</span></p>
+      <p><span class="user">Not logged in</span></p>
     {% endif %}
 
-    <!-- Team bio -->
     <div class="bio">
-      <h2>Team</h2>
-      <p><strong>Alicia Soosai</strong> &amp; teammate — UChicago DS/BusEcon. Building CloudySky, a moderated chat/feed with posts, comments, and admin tools.</p>
+      <h3>Team Bio</h3>
+      <p>Alicia Soosai &amp; team — builders of CloudySky, a minimal chat with moderation.</p>
     </div>
 
-    <p><a href="/app/new">Create an account</a> · <a href="/accounts/login/">Login</a></p>
+    <p style="margin-top:20px;">
+      <a href="/app/new">Create a new user</a> • <a href="/accounts/login">Login</a>
+    </p>
   </div>
 </body>
 </html>

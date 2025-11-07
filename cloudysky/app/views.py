@@ -1,28 +1,32 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.contrib.auth import login
+from django.views.decorators.csrf import csrf_exempt
 from django.http import (
     HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
 )
 from datetime import datetime, time
 from zoneinfo import ZoneInfo  # Python ≥ 3.9
-from django.views.decorators.csrf import csrf_exempt
+
 
 # ====== HW4: index page (shows time + highlights current user) ======
 def index(request):
     chicago = ZoneInfo("America/Chicago")
     now_cdt = datetime.now(tz=chicago)
     current_time = now_cdt.strftime("%H:%M")
+    # Note: {{ user }} is available via context processors, but passing doesn't hurt
     return render(request, "app/index.html", {
         "current_time": current_time,
-        "user": request.user,  # ensure available as {{ user }}
+        "user": request.user,
     })
+
 
 # ====== HW4: /app/new (GET only) ======
 def new_user_form(request):
     if request.method != "GET":
         return HttpResponseNotAllowed(["GET"], "This endpoint only accepts GET.")
     return render(request, "app/new.html")
+
 
 # ====== HW4: /app/createUser (POST only) ======
 @csrf_exempt
@@ -73,7 +77,7 @@ def sum_view(request):
         return HttpResponseBadRequest("Use GET")
     n1 = request.GET.get("n1")
     n2 = request.GET.get("n2")
-    if n1 is None or n2 is None:  # <-- fix indentation
+    if n1 is None or n2 is None:
         return HttpResponseBadRequest("Missing n1 or n2")
     try:
         x, y = float(n1), float(n2)
@@ -82,4 +86,3 @@ def sum_view(request):
     s = x + y
     payload = str(int(s)) if s.is_integer() else str(s)
     return HttpResponse(payload, content_type="text/plain")
-

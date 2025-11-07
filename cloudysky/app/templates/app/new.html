@@ -3,44 +3,31 @@
 <head>
   <meta charset="utf-8">
   <title>Sign Up</title>
-  <style>
-    body { display:flex; min-height:100vh; margin:0; font-family:sans-serif; }
-    .wrap { margin:auto; text-align:center; max-width:600px; }
-    form { display:inline-block; text-align:left; }
-    label { display:block; margin-top:10px; }
-    .btn { margin-top:12px; background:#2ecc71; color:#fff; border:0; padding:8px 14px; border-radius:6px; cursor:pointer; }
-  </style>
 </head>
-<body>
-  <div class="wrap">
-    <h1>Create a User</h1>
-
-    <!-- GET-only view: shows a POSTing form -->
+<body style="display:flex;min-height:100vh;align-items:center;justify-content:center;font-family:system-ui,sans-serif;">
+  <div>
+    <h2>Create Account</h2>
     <form action="/app/createUser" method="POST">
       {% csrf_token %}
-      <label>Username
+      <p><label>Username
         <input type="text" name="user_name" required>
-      </label>
-      <label>Last name
+      </label></p>
+      <p><label>Last name
         <input type="text" name="last_name">
-      </label>
-      <label>Email
+      </label></p>
+      <p><label>Email
         <input type="email" name="email" required>
-      </label>
-      <label>Password
+      </label></p>
+      <p><label>Password
         <input type="password" name="password" required>
-      </label>
-      <label>Is admin
-        <select name="is_admin">
-          <option value="0" selected>No</option>
-          <option value="1">Yes</option>
-        </select>
-      </label>
-
-      <button type="submit" class="btn">Sign Up</button>
+      </label></p>
+      <p><label>Admin?
+        <input type="checkbox" name="is_admin" value="1">
+      </label></p>
+      <button type="submit" style="background:#16a34a;color:white;padding:8px 14px;border:0;border-radius:6px;">
+        Sign Up
+      </button>
     </form>
-
-    <p style="margin-top:1rem;"><a href="/">Back to index</a></p>
   </div>
 </body>
 </html>
