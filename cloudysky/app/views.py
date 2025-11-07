@@ -15,7 +15,7 @@ def index(request):
     current_time = now_cdt.strftime("%H:%M")
     return render(request, "app/index.html", {
         "current_time": current_time,
-        # if logged in, template will show bold username/email; else "Not logged in"
+        "user": request.user,  # ensure available as {{ user }}
     })
 
 # ====== HW4: /app/new (GET only) ======
@@ -33,6 +33,7 @@ def create_user(request):
     email = request.POST.get("email")
     username = request.POST.get("user_name")
     password = request.POST.get("password")
+    last_name = request.POST.get("last_name", "")
     is_admin = request.POST.get("is_admin", "0") == "1"
 
     # Basic validation
@@ -45,10 +46,11 @@ def create_user(request):
         return HttpResponseBadRequest("A user with that username already exists.")
 
     user = User.objects.create_user(username=username, password=password, email=email)
+    if last_name:
+        user.last_name = last_name
     if is_admin:
-        # give staff status (not full superuser)
         user.is_staff = True
-        user.save()
+    user.save()
 
     login(request, user)
     return HttpResponse(f"User {username} successfully created and logged in!")

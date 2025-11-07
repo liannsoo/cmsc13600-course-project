@@ -16,7 +16,7 @@
     <h1>Create a User</h1>
 
     <!-- GET-only view: shows a POSTing form -->
-    <form action="/app/createUser" method="post">
+    <form action="/app/createUser" method="POST">
       {% csrf_token %}
       <label>Username
         <input type="text" name="user_name" required>
@@ -30,8 +30,11 @@
       <label>Password
         <input type="password" name="password" required>
       </label>
-      <label>
-        <input type="checkbox" name="is_admin" value="1"> Is admin
+      <label>Is admin
+        <select name="is_admin">
+          <option value="0" selected>No</option>
+          <option value="1">Yes</option>
+        </select>
       </label>
 
       <button type="submit" class="btn">Sign Up</button>

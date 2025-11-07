@@ -18,9 +18,8 @@
     <p>Current time (CDT): <span class="highlight">{{ current_time }}</span></p>
 
     <!-- Login state -->
-    {% if request.user.is_authenticated %}
-      <p>Welcome, <span class="highlight">{{ request.user.username }}</span>
-         {% if request.user.email %} &lt;<span class="highlight">{{ request.user.email }}</span>&gt;{% endif %}</p>
+    {% if user.is_authenticated %}
+      <p>Welcome, <b>{{ user.username }} ({{ user.email }})</b></p>
     {% else %}
       <p><span class="highlight">Not logged in</span></p>
     {% endif %}
