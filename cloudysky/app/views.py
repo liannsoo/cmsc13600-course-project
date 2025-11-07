@@ -35,7 +35,10 @@ def create_user(request):
     username = request.POST.get("user_name")
     password = request.POST.get("password")
     last_name = request.POST.get("last_name", "")
-    is_admin = request.POST.get("is_admin", "0") == "1"
+
+    # Robust parse: treat "1/true/yes/on" as admin
+    is_admin_val = str(request.POST.get("is_admin", "0")).strip().lower()
+    is_admin = is_admin_val in ("1", "true", "yes", "on")
 
     if not email or not username or not password:
         return HttpResponseBadRequest("Missing email, user_name, or password.")
@@ -45,14 +48,19 @@ def create_user(request):
     if User.objects.filter(username=username).exists():
         return HttpResponseBadRequest("A user with that username already exists.")
 
-    user = User.objects.create_user(username=username, password=password, email=email)
+    # Create user
+    u = User.objects.create_user(username=username, password=password, email=email)
     if last_name:
-        user.last_name = last_name
+        u.last_name = last_name
     if is_admin:
-        user.is_staff = True  # not superuser, just staff
-    user.save()
+        u.is_staff = True     # staff (admin panel access); not superuser
+    u.save()
 
-    login(request, user)
+    # IMPORTANT: authenticate first; THEN login
+    authed = authenticate(request, username=username, password=password)
+    if authed is not None:
+        login(request, authed)
+    # If for some reason authenticate fails (shouldn’t), still return 200:
     return HttpResponse(f"User {username} successfully created and logged in!")
 
 # ====== HW2/HW3 endpoints kept working ======
