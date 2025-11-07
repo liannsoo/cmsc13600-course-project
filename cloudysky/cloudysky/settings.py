@@ -2,7 +2,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'dev-key-for-class-only'
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
