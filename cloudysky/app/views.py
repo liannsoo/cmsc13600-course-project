@@ -1,23 +1,20 @@
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.contrib.auth import login
-from django.views.decorators.csrf import csrf_exempt
 from django.http import (
     HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
 )
 from datetime import datetime, time
 from zoneinfo import ZoneInfo  # Python ≥ 3.9
 
-
 # ====== HW4: index page (shows time + highlights current user) ======
 def index(request):
     chicago = ZoneInfo("America/Chicago")
     now_cdt = datetime.now(tz=chicago)
     current_time = now_cdt.strftime("%H:%M")
-    # Note: {{ user }} is available via context processors, but passing doesn't hurt
     return render(request, "app/index.html", {
         "current_time": current_time,
-        "user": request.user,
     })
 
 
@@ -40,7 +37,6 @@ def create_user(request):
     last_name = request.POST.get("last_name", "")
     is_admin = request.POST.get("is_admin", "0") == "1"
 
-    # Basic validation
     if not email or not username or not password:
         return HttpResponseBadRequest("Missing email, user_name, or password.")
 
@@ -53,12 +49,11 @@ def create_user(request):
     if last_name:
         user.last_name = last_name
     if is_admin:
-        user.is_staff = True
+        user.is_staff = True  # not superuser, just staff
     user.save()
 
     login(request, user)
     return HttpResponse(f"User {username} successfully created and logged in!")
-
 
 # ====== HW2/HW3 endpoints kept working ======
 def time_since_midnight_cdt(request):
