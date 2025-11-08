@@ -57,6 +57,7 @@ DATABASES = {
 }
 
 LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'America/Chicago'   # OK even though /time uses ZoneInfo
