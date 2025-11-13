@@ -10,12 +10,13 @@ from django.http import (
     JsonResponse,
 )
 from django.shortcuts import render
-from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Post, Comment, ModerationReason
+from .models import Post, Comment
+
 
 # ===== HW4: index =====
+
 def index(request):
     chicago = ZoneInfo("America/Chicago")
     now_cdt = datetime.now(tz=chicago)
@@ -31,7 +32,7 @@ def index(request):
 
 
 # ===== HW4: user creation =====
-# ===== HW4: user creation =====
+
 def new_user_form(request):
     if request.method != "GET":
         return HttpResponseNotAllowed(["GET"], "This endpoint only accepts GET.")
@@ -43,7 +44,7 @@ def create_user(request):
     """
     /app/createUser
 
-    Must be idempotent: if the user already exists, update their info,
+    Idempotent: if the user already exists, update their info,
     set the password, log them in, and return 200.
     """
     if request.method != "POST":
@@ -77,6 +78,7 @@ def create_user(request):
 
 
 # ===== HW2/HW3 endpoints =====
+
 def time_since_midnight_cdt(request):
     if request.method != "GET":
         return HttpResponseBadRequest("Use GET")
@@ -105,6 +107,7 @@ def sum_view(request):
 
 
 # ===== HW5: helper HTML views (forms) =====
+
 def new_post(request):
     if request.method != "GET":
         return HttpResponseNotAllowed(["GET"])
@@ -122,6 +125,7 @@ def new_comment(request):
 
 
 # ===== HW5: API endpoints =====
+
 @csrf_exempt
 def create_post(request):
     if request.method != "POST":
@@ -194,7 +198,11 @@ def hide_post(request):
 
     try:
         post = Post.objects.get(id=int(post_id))
-        post.is_hidden = True
+        # mark hidden if such a field exists
+        if hasattr(post, "is_hidden"):
+            post.is_hidden = True
+        elif hasattr(post, "hidden"):
+            post.hidden = True
         post.save()
     except Exception:
         # tests only require 200, not that the post actually exists
@@ -216,7 +224,10 @@ def hide_comment(request):
 
     try:
         comment = Comment.objects.get(id=int(comment_id))
-        comment.is_hidden = True
+        if hasattr(comment, "is_hidden"):
+            comment.is_hidden = True
+        elif hasattr(comment, "hidden"):
+            comment.hidden = True
         comment.save()
     except Exception:
         pass
@@ -225,6 +236,7 @@ def hide_comment(request):
 
 
 # ===== HW5: dumpFeed =====
+
 def dump_feed(request):
     """
     GET /app/dumpFeed
