@@ -11,6 +11,8 @@ from django.http import (
 )
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from django.core.management import call_command
+from django.db import OperationalError
 
 from .models import Post, Comment
 
@@ -46,6 +48,9 @@ def create_user(request):
 
     Idempotent: if the user already exists, update their info,
     set the password, log them in, and return 200.
+
+    Also: if the database isn't migrated yet (no auth_user table),
+    we run migrations once and then retry.
     """
     if request.method != "POST":
         return HttpResponseNotAllowed(["POST"])
@@ -61,14 +66,24 @@ def create_user(request):
     if not email or not username or not password:
         return HttpResponseBadRequest("Missing email, user_name, or password.")
 
-    # IMPORTANT: idempotent behavior
-    user, created = User.objects.get_or_create(username=username)
-    user.email = email
-    if last_name:
-        user.last_name = last_name
-    user.is_staff = is_admin
-    user.set_password(password)
-    user.save()
+    # Try once; if DB tables are missing, run migrate and retry.
+    for attempt in range(2):
+        try:
+            user, created = User.objects.get_or_create(username=username)
+            user.email = email
+            if last_name:
+                user.last_name = last_name
+            user.is_staff = is_admin
+            user.set_password(password)
+            user.save()
+            break
+        except OperationalError:
+            if attempt == 0:
+                # Run migrations to create tables, then try again
+                call_command("migrate", interactive=False, verbosity=0)
+            else:
+                # Second failure: give up with a clear 500 rather than looping
+                raise
 
     authed = authenticate(request, username=username, password=password)
     if authed is not None:
