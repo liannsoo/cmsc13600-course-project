@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Create Comment</h2>
+
+<form method="post" action="/app/createComment">
+  {% csrf_token %}
+  <p>Post ID: <input type="number" name="post_id"></p>
+  <p>Comment: <textarea name="content"></textarea></p>
+  <button type="submit">Submit</button>
+</form>
+
+</body>
+</html>
+

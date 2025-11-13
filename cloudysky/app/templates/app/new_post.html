@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Create Post</h2>
+
+<form method="post" action="/app/createPost">
+  {% csrf_token %}
+  <p>Title: <input type="text" name="title"></p>
+  <p>Content:<br>
+     <textarea name="content"></textarea></p>
+  <button type="submit">Submit</button>
+</form>
+
+</body>
+</html>
+
