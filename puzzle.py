@@ -1,3 +1,3 @@
 puzzle_key = "049677629"
-puzzle_misspell = "wkitpng"
+puzzle_misspell = "tysxnt"
 
