@@ -1,3 +1,3 @@
-puzzle_key = int(485066843)
-puzzle_misspell = "wkitpng"
+puzzle_key = int(049677629)
+puzzle_misspell = "tysxnt"
 
