@@ -1,23 +1,24 @@
 Solutions:
-puzzle_key = 485066843
-puzzle_misspell = "wkitpng"
+puzzle_key = 049677629
+puzzle_misspell = "tysxnt"
 
-These were obtained using:
-- a custom MD5 brute-force key search
-- dictionary-based decoding
-- comparison against the correctly identified source text
-- and an edit-distance misspelling search (proof-of-work)
+The intended word was supposed to be tryant and the quote is from Brandon Sanderson, Mistborn: The Final Empire
 
-To find the 9-digit key, I used a brute-forcer to search for the key; The code tested keys from 000000000 to 999999999, and for each candidate key computed: MD5(key + common_word).
-I used ~100 very common English words (e.g. “the”, “and”, “to”, etc.) to check whether any generated hash appeared in PUZZLE.txt. A match was found in about 2 hours:
-key = 485066843
-matching word = "the"
-matching hash = cdf6a5538f463348ace7efaaa8312eba
+I solved the puzzle using:
+Python’s multiprocessing module (Pool, cpu_count) to distribute key search across cores.
+Python hashlib for computing sha256(KEY + word) hashes.
+pandas to help organize and inspect intermediate results.
+functools.partial to build compact worker functions for parallel search.
+Custom string utilities to generate all strings at Levenshtein edit distance 1 and 2 from a base word.
+A Kaggle English word list of about 200,000 entries as the main dictionary.
 
-Then, to decode the message, I combined the macOS dictionary at /usr/share/dict/words to an additional wordlist.txt from online (along with punctuation/capitalization variants). For each candidate word, I computed: MD5(key + word) and and inserted it into a dictionary mapping hash to word. 
-PUZZLE.txt was decoded in ORDER such that if the hash existed in the lookup ->  decoded word otherwise would return <?>. This produced an almost complete paragraph with several <?> gaps that represented words missing from the dictionary or possibly the misspelling. The semi-decoded text was enough to recognize the quotation, so I searched online and identified the exact passage as coming from James by Percival Everett. I copied the full original paragraph into a file original.txt so my script could compare it word-by-word against the puzzle.
-I compared each original word against the puzzle by computing MD5(key + original_word[i]) and and checking whether it matched the corresponding hash in PUZZLE.txt.All words matched correctly except one: 
-Index: 73
-Puzzle hash: 9291c4d7338648be9c05d86fdb4124f9
-Original word: "waiting"
-This indicated that the puzzle text did not use the correct word “waiting” at that position — this was the single incorrect/misspelled word we were asked to detect. The puzzle’s incorrect word must be some string x such that MD5( "485066843" + x ) = the respective hash. To find it, I generated all words within edit distance 1 and 2 of the correct word "waiting" only one matched the puzzle hash which was "wkitpng", hence, the misspelled form. 
+How I found the key:
+1. Key assumptions: The hidden text was likely natural English, so it should contain common stop words like “the.”
+2. I wrote a script that iterates through all 9-digit keys and, for each key, checks whether sha256(KEY + "the") matches any of the hashes in PUZZLE.txt.
+3. I split the 0–999,999,999 range into chunks and used multiprocessing.Pool to have multiple processes test different key ranges in parallel across 14 cores.
+4. The parallel search returned a unique match, identifying the correct key as: 049677629 
+
+Decoding:
+I loaded the ~200k-word Kaggle dictionary and, for each word, computed sha256(KEY + word) and stored the mapping from hash → word. By scanning through PUZZLE.txt and looking up each hash in this map, I recovered most of the words in the message. Some entries still could not be decoded.
+However, I noticed that many missing words were actually words plus punctuation (e.g., "word.", "word,") that weren’t present in the plain dictionary. After I accounted for punctuation variants, coverage improved, but there were still a few gaps.
+The partially recognized passage was searchable online so I did so and found its origin. At that point I had the full, correct English text available for comparison. After aligning the decoded text with the original quote, the problematic spot corresponded to the word “tyrant.” in the original passage. 
