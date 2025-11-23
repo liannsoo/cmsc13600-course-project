@@ -1,3 +1,3 @@
 puzzle_key = int(485066843)
-puzzle_misspell = str(wkitpng)
+puzzle_misspell = "wkitpng"
 
