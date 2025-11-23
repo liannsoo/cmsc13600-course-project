@@ -291,3 +291,96 @@ def dump_feed(request):
 
     return JsonResponse(data, safe=False)
 
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def feed(request):
+    user = request.user
+    posts_data = []
+
+    # reverse chronological
+    posts = Post.objects.all().order_by("-created_at")
+
+    for post in posts:
+
+        # ----- POST HIDDEN RULE -----
+        if post.is_hidden:
+            # only creator or staff may see hidden post
+            if (not request.user.is_staff) and (post.author != user):
+                continue
+
+        # ----- TRUNCATE CONTENT -----
+        content_preview = post.content
+        if len(content_preview) > 50:
+            content_preview = content_preview[:50] + "..."
+
+        # ----- COLOR CODING -----
+        if post.is_hidden:
+            color = "red"
+        elif post.author == user:
+            color = "yellow"
+        else:
+            color = "green"
+
+        posts_data.append({
+            "id": post.id,
+            "title": post.title,
+            "username": post.author.username,
+            "date": post.created_at.isoformat(),
+            "preview": content_preview,
+            "color": color,
+        })
+
+    return JsonResponse({"posts": posts_data})
+
+@login_required
+def post_detail(request, post_id):
+    user = request.user
+
+    try:
+        post = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found"}, status=404)
+
+    # ----- POST HIDDEN RULE -----
+    if post.is_hidden:
+        if (not user.is_staff) and (post.author != user):
+            return JsonResponse({"error": "Forbidden"}, status=403)
+
+    # ----- FULL POST DATA -----
+    post_data = {
+        "id": post.id,
+        "title": post.title,
+        "username": post.author.username,
+        "date": post.created_at.isoformat(),
+        "content": post.content,
+        "is_hidden": post.is_hidden,
+    }
+
+    # ----- COMMENTS -----
+    comments = Comment.objects.filter(post=post).order_by("created_at")
+    comment_list = []
+
+    for c in comments:
+
+        # if the comment is hidden:
+        if c.is_hidden:
+            if user.is_staff or c.author == user:
+                comment_text = c.content
+            else:
+                comment_text = "This comment has been removed"
+        else:
+            comment_text = c.content
+
+        comment_list.append({
+            "username": c.author.username,
+            "date": c.created_at.isoformat(),
+            "content": comment_text,
+            "is_hidden": c.is_hidden,
+        })
+
+    post_data["comments"] = comment_list
+
+    return JsonResponse(post_data)
+
+

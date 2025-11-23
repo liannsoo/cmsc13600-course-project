@@ -20,5 +20,9 @@ urlpatterns = [
     path("hidePost/", views.hide_post),
     path("hideComment/", views.hide_comment),
     path("dumpFeed/", views.dump_feed),
+
+    path("feed", views.feed),
+    path("post/<int:post_id>", views.post_detail),
+
 ]
 
